@@ -3,8 +3,8 @@
 // Foi usado somente para especies e tipos, porque os outros filtros são menores e já estão descritos na documentação da api pública
 export async function fetchOptionsFilters() {
 
-    let allSpecies = new Set<string>();
-    let allTypes = new Set<string>();
+    const allSpecies = new Set<string>();
+    const allTypes = new Set<string>();
     // Define que a busca começa na "page 1"
     let nextPage = `${process.env.NEXT_PUBLIC_URL_API}/character?page=1`;
   
