@@ -82,3 +82,15 @@
     @apply bg-background text-foreground;
   }
 }
+
+@font-face {
+  font-family: 'Get Schwifty';
+  src: url('/fonts/GetSchwifty.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.rick-and-morty-font {
+  font-family: 'Get Schwifty', sans-serif;
+}
+
