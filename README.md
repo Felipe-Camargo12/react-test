@@ -49,4 +49,5 @@ São **826** personagens no total, conforme é setado o número de itens por pá
 226%10 = 82,6 então:    10 personagens = 83 páginas
 226%5 = 165,2 então:    5 personanges = 166 páginas
 
-OBS: https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
+
+OBS: QueryParams usado precisou ser encapsulado em Suspense e modularizado em um componente a parte da page.tsx: https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout

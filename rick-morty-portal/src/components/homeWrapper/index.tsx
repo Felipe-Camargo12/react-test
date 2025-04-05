@@ -6,7 +6,7 @@ import Filters from "@/components/filters";
 import { fetchCharacters } from "@/services/getCardsCharacters";
 import PaginationFooter from "@/components/paginationFooter";
 import ItensPerPage from "@/components/itensPerPage";
-import LoagingSkeleton from "@/components/loadingSkeleton";
+import LoadingSkeleton from "@/components/loadingSkeleton";
 import { useQueryParamsFilters } from "@/hooks/queryParamsFilters";
 import { Suspense } from "react";
 
@@ -49,8 +49,7 @@ export default function Home() {
   useEffect(() => {
     const pageParam = Number(searchParams.get("page")) || 1;
     setCurrentPage(pageParam);
-  }, [searchParams]);
-  useEffect(() => {
+
     setLoading(true);
     fetchCharacters(search, status, species, gender, type).then((data) => {
       setAllCharacters(data);
@@ -125,7 +124,7 @@ export default function Home() {
           {/* Listagem */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full">
             {loading ? (
-              <LoagingSkeleton amount={pageSize} />
+              <LoadingSkeleton amount={pageSize} />
             ) : paginatedCharacters.length > 0 ? (
               paginatedCharacters.map((char) => (
                 <CharacterCard key={char.id} character={char} />
