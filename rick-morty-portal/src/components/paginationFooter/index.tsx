@@ -77,7 +77,6 @@ export default function PaginationFooter({
               e.preventDefault();
               handlePageChange(currentPage + 1);
             }}
-            disabled={currentPage === totalPages} // Desabilitar se for a última página
           />
         </PaginationItem>
       </PaginationContent>
