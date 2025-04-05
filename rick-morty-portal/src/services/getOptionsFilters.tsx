@@ -15,7 +15,7 @@ export async function fetchOptionsFilters() {
         const data = await res.json();
   
         // Itera sobre a lista, e adiciona espécies e tipos aos conjuntos 
-        data.results.forEach((character) => {
+        data.results.forEach((character: { species: string; type: string }) => {
           allSpecies.add(character.species);
           if (character.type) allTypes.add(character.type);
         });
