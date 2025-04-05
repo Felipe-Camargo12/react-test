@@ -1,7 +1,8 @@
-import { Heart } from "lucide-react";
+import { Heart, ExternalLink } from "lucide-react";
 import { Container } from "@/components/container/index";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 type Character = {
   id: number;
@@ -24,6 +25,12 @@ export default function CharacterCard({ character }: { character: Character }) {
     setIsModalOpen(false);
   };
 
+  // Função para abrir imagem em nova guia
+  const handleOpenImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open(character.image);
+  }
+
   return (
     <Container>
       {/* Grid de Cards*/}
@@ -32,16 +39,27 @@ export default function CharacterCard({ character }: { character: Character }) {
         onClick={handleOpenModal}
       >
         {/* Botão favoritar*/}
-        <button className="absolute top-2 right-2 bg-white p-2 rounded-full hover:bg-gray-200 z-10">
-          <Heart size={24} color="red" />
-        </button>
-        <img
+        <Button className="absolute top-2 right-2 bg-white p-2 rounded-full hover:bg-gray-200">
+          <Heart color="red" />
+        </Button>
+        <Image
           src={character.image}
           alt={character.name}
+          width={300}
+          height={300}
           className="w-full h-[200px] sm:h-[250px] md:h-[300px] object-cover rounded-t-md"
         />
 
-        {/* Text Content */}
+        {/* Botão de abrir imagem em nova aba */}
+        <Button
+          className="absolute top-2 right-12 bg-white p-2 rounded-full hover:bg-gray-200 "
+          onClick={handleOpenImage}
+          title="Abrir imagem em nova aba"
+        >
+          <ExternalLink color="black" />
+        </Button>
+
+        {/* Conteudo de texto */}
         <div className="p-4 flex flex-col justify-between h-[40%]">
           {/* Nome do personagem c/ truncate se for longo */}
           <h2 className="text-lg font-bold truncate overflow-hidden whitespace-nowrap">
@@ -65,9 +83,11 @@ export default function CharacterCard({ character }: { character: Character }) {
             <p className="text-xl font-semibold mb-2 dark:text-gray-300">
               Gênero: {character.origin.name}
             </p>
-            <img
+            <Image
               src={character.image}
               alt={character.name}
+              width={200}
+              height={200}
               className="rounded-md object-cover mb-4"
             />
             <div className="mt-4 text-center">
