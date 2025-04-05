@@ -26,6 +26,7 @@ type FiltersProps = {
   setGender: (value: string) => void;
   type: string;
   setType: (value: string) => void;
+  clearFilters: () => void;
 };
 
 export default function Filters({
@@ -39,6 +40,7 @@ export default function Filters({
   setGender,
   type,
   setType,
+  clearFilters,
 }: FiltersProps) {
   const [speciesList, setSpeciesList] = useState<string[]>([]);
   const [typeList, setTypeList] = useState<string[]>([]);
@@ -53,15 +55,6 @@ export default function Filters({
 
     loadFilters();
   }, []);
-
-  // Função para limpar todos os filtros
-  const clearFilters = () => {
-    setSearch("");
-    setStatus("");
-    setSpecies("");
-    setGender("");
-    setType("");
-  };
 
   return (
     <div className="w-full flex flex-col sm:flex-row items-center gap-4">
