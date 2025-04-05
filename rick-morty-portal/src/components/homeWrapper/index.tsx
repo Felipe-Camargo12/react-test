@@ -95,7 +95,7 @@ export default function Home() {
 
         {/* Apresentação */}
         <main className="flex flex-col items-center sm:items-start justify-center flex-grow p-4 sm:p-20 gap-8 w-full max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-center sm:text-left">
+          <h1 className="text-3xl font-bold text-center sm:text-left rick-and-morty-font">
             Rick and Morty Characters
           </h1>
 
