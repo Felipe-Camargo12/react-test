@@ -79,7 +79,7 @@ export default function CharacterCard({ character }: { character: Character }) {
               className="absolute top-4 right-4 z-10 rounded-full"
               variant="destructive"
             >
-              <X/>
+              <X />
             </Button>
 
             <div className="flex flex-col md:flex-row gap-6">
@@ -112,29 +112,20 @@ export default function CharacterCard({ character }: { character: Character }) {
                     )
                       return null;
 
-                    if (typeof value === "object" && value !== null) {
-                      return (
-                        <div key={key}>
-                          <p className="text-sm font-semibold text-lime-600 dark:text-lime-400 capitalize rick-and-morty-font">
-                            {key}:
-                          </p>
-                          {Object.entries(value).map(([subKey, subValue]) => {
-                            if (subKey === "url") return null;
-                            return (
-                              <p
-                                key={subKey}
-                                className="text-sm text-zinc-800 dark:text-zinc-100 ml-2"
-                              >
-                                {subKey}:{" "}
-                                <span className="font-medium">
-                                  {subValue || "Unknown"}
-                                </span>
-                              </p>
-                            );
-                          })}
-                        </div>
-                      );
-                    }
+                      if (typeof value === "object" && value !== null) {
+                        return (
+                          <div key={key}>
+                            <p className="text-sm font-semibold text-lime-600 dark:text-lime-400 capitalize rick-and-morty-font">
+                              {key}:
+                            </p>
+                            <p className="text-sm text-zinc-800 dark:text-zinc-100 ml-2">
+                              <span className="font-medium">
+                                {value.name || "Unknown"}
+                              </span>
+                            </p>
+                          </div>
+                        );
+                      }
 
                     return (
                       <p
