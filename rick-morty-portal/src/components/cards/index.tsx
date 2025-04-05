@@ -1,4 +1,4 @@
-import { Heart, ExternalLink } from "lucide-react";
+import { Heart, ExternalLink, X } from "lucide-react";
 import { Container } from "@/components/container/index";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,7 @@ export default function CharacterCard({ character }: { character: Character }) {
   const handleOpenImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     window.open(character.image);
-  }
+  };
 
   return (
     <Container>
@@ -71,29 +71,85 @@ export default function CharacterCard({ character }: { character: Character }) {
 
       {/* Modal com detalhes */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-8 rounded-lg w-11/12 sm:w-1/2 dark:bg-gray-800">
-            <h2 className="text-3xl font-bold mb-4 dark:text-white">{character.name}</h2>
-            <p className="text-xl font-semibold mb-2 dark:text-gray-300">
-              Espécie: {character.species}
-            </p>
-            <p className="text-xl font-semibold mb-2 dark:text-gray-300">
-              Status: {character.status}
-            </p>
-            <p className="text-xl font-semibold mb-2 dark:text-gray-300">
-              Gênero: {character.origin.name}
-            </p>
-            <Image
-              src={character.image}
-              alt={character.name}
-              width={200}
-              height={200}
-              className="rounded-md object-cover mb-4"
-            />
-            <div className="mt-4 text-center">
-              <Button variant="destructive" onClick={handleCloseModal}>
-                Fechar
-              </Button>
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-11/12 max-w-3xl max-h-[90vh] overflow-y-auto p-6 sm:p-10 relative">
+            {/* Botão de fechar flutuante */}
+            <Button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 z-10 rounded-full"
+              variant="destructive"
+            >
+              <X/>
+            </Button>
+
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* Imagem */}
+              <div className="flex-shrink-0 mx-auto md:mx-0">
+                <Image
+                  src={character.image}
+                  alt={character.name}
+                  width={300}
+                  height={300}
+                  className="rounded-xl object-cover shadow-lg"
+                />
+              </div>
+
+              {/* Informações do personagem */}
+              <div className="flex-1">
+                <h2 className="text-3xl font-bold mb-4 text-lime-600 dark:text-lime-400 text-center rick-and-morty-font">
+                  {character.name}
+                </h2>
+
+                <div className="space-y-3">
+                  {Object.entries(character).map(([key, value]) => {
+                    if (
+                      key === "image" ||
+                      key === "id" ||
+                      key === "name" ||
+                      key === "url" ||
+                      key === "created" ||
+                      Array.isArray(value)
+                    )
+                      return null;
+
+                    if (typeof value === "object" && value !== null) {
+                      return (
+                        <div key={key}>
+                          <p className="text-sm font-semibold text-lime-600 dark:text-lime-400 capitalize rick-and-morty-font">
+                            {key}:
+                          </p>
+                          {Object.entries(value).map(([subKey, subValue]) => {
+                            if (subKey === "url") return null;
+                            return (
+                              <p
+                                key={subKey}
+                                className="text-sm text-zinc-800 dark:text-zinc-100 ml-2"
+                              >
+                                {subKey}:{" "}
+                                <span className="font-medium">
+                                  {subValue || "Unknown"}
+                                </span>
+                              </p>
+                            );
+                          })}
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <p
+                        key={key}
+                        className="text-sm text-zinc-800 dark:text-zinc-100"
+                      >
+                        <span className="font-semibold capitalize text-lime-600 dark:text-lime-400 rick-and-morty-font">
+                          {key}:
+                        </span>{" "}
+                        {value?.toString() || "Unknown"}
+                      </p>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
         </div>
