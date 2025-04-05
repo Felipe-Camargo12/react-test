@@ -9,7 +9,7 @@ export async function fetchCharacters(
   try {
     const baseUrl = `${process.env.NEXT_PUBLIC_URL_API}/character`;
     let currentPage = 1;
-    let allCharacters = [];
+    const allCharacters = [];
     // Variavel para saber se ainda existem páginas a serem buscadas
     let hasNext = true;
 
