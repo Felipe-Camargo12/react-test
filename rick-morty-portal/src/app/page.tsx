@@ -8,6 +8,7 @@ import PaginationFooter from "@/components/paginationFooter";
 import ItensPerPage from "@/components/itensPerPage";
 import LoagingSkeleton from "@/components/loadingSkeleton";
 import { useQueryParamsFilters } from "@/hooks/queryParamsFilters";
+import { Suspense } from "react";
 
 type ParamsCharacter = {
   id: number;
@@ -20,17 +21,27 @@ type ParamsCharacter = {
 
 export default function Home() {
   const {
-    search, status, species, gender, type,
-    handleSearchChange, handleStatusChange,
-    handleSpeciesChange, handleGenderChange,
-    handleTypeChange, clearFilters, searchParams
+    search,
+    status,
+    species,
+    gender,
+    type,
+    handleSearchChange,
+    handleStatusChange,
+    handleSpeciesChange,
+    handleGenderChange,
+    handleTypeChange,
+    clearFilters,
+    searchParams,
   } = useQueryParamsFilters();
 
   const [allCharacters, setAllCharacters] = useState<ParamsCharacter[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(Number(searchParams.get("pageSize")) || 20);
+  const [pageSize, setPageSize] = useState(
+    Number(searchParams.get("pageSize")) || 20
+  );
 
   // Effect para fazer busca de personagens sempre que um filtro ou página mudar
   // Passa a página atual e os filtros na busca
@@ -78,60 +89,62 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Header*/}
-      <Header />
+    <Suspense>
+      <div className="flex flex-col min-h-screen">
+        {/* Header*/}
+        <Header />
 
-      {/* Apresentação */}
-      <main className="flex flex-col items-center sm:items-start justify-center flex-grow p-4 sm:p-20 gap-8 w-full max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-center sm:text-left">
-          Rick and Morty Characters
-        </h1>
+        {/* Apresentação */}
+        <main className="flex flex-col items-center sm:items-start justify-center flex-grow p-4 sm:p-20 gap-8 w-full max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold text-center sm:text-left">
+            Rick and Morty Characters
+          </h1>
 
-        {/* Filtros */}
-        <Filters
-          search={search}
-          setSearch={handleSearchChange}
-          status={status}
-          setStatus={handleStatusChange}
-          species={species}
-          setSpecies={handleSpeciesChange}
-          gender={gender}
-          setGender={handleGenderChange}
-          type={type}
-          setType={handleTypeChange}
-          clearFilters={clearFilters}
-        />
+          {/* Filtros */}
+          <Filters
+            search={search}
+            setSearch={handleSearchChange}
+            status={status}
+            setStatus={handleStatusChange}
+            species={species}
+            setSpecies={handleSpeciesChange}
+            gender={gender}
+            setGender={handleGenderChange}
+            type={type}
+            setType={handleTypeChange}
+            clearFilters={clearFilters}
+          />
 
-        {/* Seleção de itens por página */}
-        <ItensPerPage
-          pageSize={pageSize}
-          setPageSize={handlePageSizeChange}
-          setCurrentPage={handlePageChange}
-        />
+          {/* Seleção de itens por página */}
+          <ItensPerPage
+            pageSize={pageSize}
+            setPageSize={handlePageSizeChange}
+            setCurrentPage={handlePageChange}
+          />
 
-        {/* Listagem */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full">
-          {loading ? (
-            <LoagingSkeleton amount={pageSize} />
-          ) : paginatedCharacters.length > 0 ? (
-            paginatedCharacters.map((char) => (
-              <CharacterCard key={char.id} character={char} />
-            ))
-          ) : (
-            <p className="text-center text-gray-500">
-              Nenhum personagem encontrado.
-            </p>
-          )}
-        </div>
+          {/* Listagem */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full">
+            {loading ? (
+              <LoagingSkeleton amount={pageSize} />
+            ) : paginatedCharacters.length > 0 ? (
+              paginatedCharacters.map((char) => (
+                <CharacterCard key={char.id} character={char} />
+              ))
+            ) : (
+              <p className="text-center text-gray-500">
+                Nenhum personagem encontrado.
+              </p>
+            )}
+          </div>
 
-        {/* Componente de paginação */}
-        <PaginationFooter
-          currentPage={currentPage} //Página atual
-          setCurrentPage={handlePageChange} // Passa função para atualizar a página
-          totalPages={totalPages} //Total de páginas
-        />
-      </main>
-    </div>
+          {/* Componente de paginação */}
+          <PaginationFooter
+            currentPage={currentPage} //Página atual
+            setCurrentPage={handlePageChange} // Passa função para atualizar a página
+            totalPages={totalPages} //Total de páginas
+          />
+        </main>
+      </div>
+    </Suspense>
   );
 }
