@@ -1,10 +1,10 @@
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function useQueryParamsFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
-// Função para pegar o parâmetro da URL senão retorna vazio
+  // Função para pegar o parâmetro da URL senão retorna vazio
   const getParam = (param: string) => searchParams.get(param) || "";
 
   const [search, setSearch] = useState(getParam("name"));
@@ -12,6 +12,14 @@ export function useQueryParamsFilters() {
   const [species, setSpecies] = useState(getParam("species"));
   const [gender, setGender] = useState(getParam("gender"));
   const [type, setType] = useState(getParam("type"));
+
+  useEffect(() => {
+    setSearch(getParam("name"));
+    setStatus(getParam("status"));
+    setSpecies(getParam("species"));
+    setGender(getParam("gender"));
+    setType(getParam("type"));
+  }, [searchParams]);
 
   // Atualiza a URL com os parametros
   const updateQueryParams = (params: Record<string, string | number>) => {
@@ -62,10 +70,17 @@ export function useQueryParamsFilters() {
   };
 
   return {
-    search, status, species, gender, type,
-    handleSearchChange, handleStatusChange,
-    handleSpeciesChange, handleGenderChange,
-    handleTypeChange, clearFilters,
-    searchParams
+    search,
+    status,
+    species,
+    gender,
+    type,
+    handleSearchChange,
+    handleStatusChange,
+    handleSpeciesChange,
+    handleGenderChange,
+    handleTypeChange,
+    clearFilters,
+    searchParams,
   };
 }
