@@ -9,6 +9,10 @@ import ItensPerPage from "@/components/itensPerPage";
 import LoadingSkeleton from "@/components/loadingSkeleton";
 import { useQueryParamsFilters } from "@/hooks/queryParamsFilters";
 import { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
+import { Suspense as Suspense3D } from "react";
+import { Meeseks } from "@/components/animate/3d-animate";
+import { useRef } from "react";
 
 type ParamsCharacter = {
   id: number;
@@ -37,11 +41,24 @@ export default function Home() {
 
   const [allCharacters, setAllCharacters] = useState<ParamsCharacter[]>([]);
   const [loading, setLoading] = useState(true);
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(
     Number(searchParams.get("pageSize")) || 20
   );
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleSearchChange(debouncedSearch); // só envia pro filtro depois do tempo
+    }, 500); // 500ms de delay
+  
+    return () => clearTimeout(timer); // limpa timeout anterior se continuar digitando
+  }, [debouncedSearch]);
+
+  useEffect(() => {
+    setDebouncedSearch(search);
+  }, [search]);  
 
   // Effect para fazer busca de personagens sempre que um filtro ou página mudar
   // Passa a página atual e os filtros na busca
@@ -49,13 +66,34 @@ export default function Home() {
   useEffect(() => {
     const pageParam = Number(searchParams.get("page")) || 1;
     setCurrentPage(pageParam);
-
+  
     setLoading(true);
     fetchCharacters(search, status, species, gender, type).then((data) => {
       setAllCharacters(data);
       setLoading(false);
+  
+      // Verifica se algum filtro está preenchido
+      const hasFilters = search || status || species || gender || type;
+  
+      // Verifica se foi um clear
+      const isClear = searchParams.get("clear") === "true";
+  
+      if (hasFilters || isClear) {
+        filtersRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+  
+        // Remove o "clear" da URL após usar
+        if (isClear) {
+          const params = new URLSearchParams(searchParams.toString());
+          params.delete("clear");
+          window.history.replaceState(null, "", `/?${params.toString()}`);
+        }
+      }
     });
-  }, [searchParams]);
+  }, [searchParams, search, status, species, gender, type]);
+  
 
   // Calculo o total de páginas baseado na quantidade de itens
   // Math.ceil serve para arredondar, qualquer sobra vira 1 página
@@ -87,6 +125,9 @@ export default function Home() {
     window.history.pushState(null, "", `/?${params.toString()}`); // Atualiza a URL sem recarregar a página
   };
 
+  // Manter referencia nos filtros para não subir a tela
+  const filtersRef = useRef<HTMLDivElement | null>(null);
+
   return (
     <Suspense>
       <div className="flex flex-col min-h-screen">
@@ -95,31 +136,68 @@ export default function Home() {
 
         {/* Apresentação */}
         <main className="flex flex-col items-center sm:items-start justify-center flex-grow p-4 sm:p-20 gap-8 w-full max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-center sm:text-left rick-and-morty-font">
-            Rick and Morty Characters
-          </h1>
+          <div className="w-full flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 px-4 py-6">
+            {/* Título */}
+            <h1
+              className="text-3xl md:text-4xl font-black text-center md:text-left w-full md:w-1/3 leading-snug"
+              style={{
+                color: "#97ce4c", // tom esverdeado vibrante
+                textShadow: `
+                  -1px -1px #000,
+                  1px -1px #000,
+                  -1px 1px #000,
+                  1px 1px #000
+                `,
+              }}
+            >
+              Bem-vindo ao multiverso! <br />
+              Encontre seus personagens favoritos aqui
+            </h1>
 
-          {/* Filtros */}
-          <Filters
-            search={search}
-            setSearch={handleSearchChange}
-            status={status}
-            setStatus={handleStatusChange}
-            species={species}
-            setSpecies={handleSpeciesChange}
-            gender={gender}
-            setGender={handleGenderChange}
-            type={type}
-            setType={handleTypeChange}
-            clearFilters={clearFilters}
-          />
+            {/* Canvas com Meeseeks */}
+            <div className="w-full md:w-[30rem] h-[400px] md:h-[500px] overflow-visible">
+              <Canvas
+                className="flex flex-row items-center justify-start bg-cover bg-center"
+                camera={{ position: [2, 1.8, 11] }}
+                style={{
+                  backgroundImage: "url('/portal.png')",
+                  backgroundSize: "contain",
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "center",
+                }}
+              >
+                <ambientLight intensity={0.9} />
+                <directionalLight position={[5, 5, 5]} intensity={1.2} />
+                <Suspense3D fallback={null}>
+                  <Meeseks />
+                </Suspense3D>
+              </Canvas>
+            </div>
+          </div>
 
-          {/* Seleção de itens por página */}
-          <ItensPerPage
-            pageSize={pageSize}
-            setPageSize={handlePageSizeChange}
-            setCurrentPage={handlePageChange}
-          />
+          <div ref={filtersRef} className="w-full flex flex-col items-center gap-4">
+            {/* Filtros */}
+            <Filters
+              search={debouncedSearch}
+              setSearch={setDebouncedSearch}
+              status={status}
+              setStatus={handleStatusChange}
+              species={species}
+              setSpecies={handleSpeciesChange}
+              gender={gender}
+              setGender={handleGenderChange}
+              type={type}
+              setType={handleTypeChange}
+              clearFilters={clearFilters}
+            />
+
+            {/* Seleção de itens por página */}
+            <ItensPerPage
+              pageSize={pageSize}
+              setPageSize={handlePageSizeChange}
+              setCurrentPage={handlePageChange}
+            />
+          </div>
 
           {/* Listagem */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full">

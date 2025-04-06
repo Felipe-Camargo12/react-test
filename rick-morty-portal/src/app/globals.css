@@ -8,6 +8,10 @@
   }
 }
 
+html {
+  scroll-behavior: auto !important;
+}
+
 @layer base {
   :root {
     --font-nunito: "Nunito", sans-serif;
