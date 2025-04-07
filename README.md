@@ -31,7 +31,7 @@ npm install
 ```
 4. Inicie o servidor de desenvolvimento
 ```bash
-npm start
+npm run dev
 ```
 Ou inicie o servidor de produção
 ```bash
