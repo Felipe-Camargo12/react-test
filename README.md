@@ -1,7 +1,8 @@
 # Projeto: Rick and Morty for Web
 
 <p align="center">
-<img src="./rick-morty-portal//public//rick-and-morty.png" alt="Rick and Morty Portal Preview" width="300"/>
+<img src="./rick-morty-portal//public//rick-and-morty.png" alt="Rick and Morty Portal Preview" width="300" />
+<img src="./rick-morty-portal//public//project.png" alt="Rick and Morty Portal Preview" width="300"/>
 </p>
 
 
