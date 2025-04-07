@@ -35,7 +35,7 @@ npm run dev
 ```
 Ou inicie o servidor de produção
 ```bash
-npm run build build
+npm run build
 next start
 ```
 
