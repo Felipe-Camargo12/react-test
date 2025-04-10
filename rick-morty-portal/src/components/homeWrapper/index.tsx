@@ -42,6 +42,7 @@ export default function Home() {
   const [allCharacters, setAllCharacters] = useState<ParamsCharacter[]>([]);
   const [loading, setLoading] = useState(true);
   const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [totalCount, setTotalCount] = useState(0);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(
@@ -65,11 +66,24 @@ export default function Home() {
   // Requisição sempre que mudar filtro ou pageSize
   useEffect(() => {
     const pageParam = Number(searchParams.get("page")) || 1;
+    // Verifica se algum filtro está preenchido
+    const hasFilters = search || status || species || gender || type;
+
+    if (hasFilters && pageParam !== 1) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("page", "1");
+      window.history.pushState(null, "", `/?${params.toString()}`);
+      setCurrentPage(1);
+      return; // Evita fazer a requisição com a página antiga
+    }
+
     setCurrentPage(pageParam);
+    const apiPage = Math.ceil((pageParam * pageSize) / 20); // Cálculo da página da API
   
     setLoading(true);
-    fetchCharacters(search, status, species, gender, type).then((data) => {
-      setAllCharacters(data);
+    fetchCharacters(search, status, species, gender, type, apiPage).then((data) => {
+      setAllCharacters(data.characters);
+      setTotalCount(data.totalCount);
       setLoading(false);
   
       // Verifica se algum filtro está preenchido
@@ -92,20 +106,19 @@ export default function Home() {
         }
       }
     });
-  }, [searchParams, search, status, species, gender, type]);
-  
+  }, [searchParams]);
 
   // Calculo o total de páginas baseado na quantidade de itens
   // Math.ceil serve para arredondar, qualquer sobra vira 1 página
   // garante sobras de itens
-  const totalPages = Math.ceil(allCharacters.length / pageSize);
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   // Reparte o totalPersonangens pelo tamanho de itens por página
   // Exemplo: Pagina 3 c/ 10 personagens: slice((3 - 1) * 10, 3 * 10) = slice(20, 30)
   // Exemplo: Pagina 2 c/ 5 personagens: slice((2 - 1) * 5, 2 * 5) = slice(5, 10)
   const paginatedCharacters = allCharacters.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
+    ((currentPage - 1) * pageSize) % 20, // inicio dentro da apiPage
+    ((currentPage - 1) * pageSize) % 20 + pageSize // fim dentro da apiPage
   );
 
   // Atualiza a page atual

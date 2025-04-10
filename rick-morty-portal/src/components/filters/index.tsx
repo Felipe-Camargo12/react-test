@@ -13,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { fetchOptionsFilters } from "@/services/getOptionsFilters";
 
 type FiltersProps = {
   search: string;
@@ -48,9 +47,14 @@ export default function Filters({
   useEffect(() => {
     // Chama o services que percorre as informações da API para pegar as opções de filtro
     async function loadFilters() {
-      const { species, types } = await fetchOptionsFilters();
-      setSpeciesList(species);
-      setTypeList(types);
+      try {
+        const res = await fetch("/api/options"); // Chama a rota local que retorna as opções de filtros
+        const { species, types } = await res.json();
+        setSpeciesList(species);
+        setTypeList(types);
+      } catch (error) {
+        console.error("Erro ao buscar opções de filtros:", error);
+      }
     }
 
     loadFilters();
@@ -107,12 +111,12 @@ export default function Filters({
           <SelectGroup>
             <SelectLabel>Espécies</SelectLabel>
             {speciesList.length > 0 ? (
-              speciesList.map((species) => (
-                <SelectItem key={species} value={species.toLowerCase()}>
-                  {species}
-                </SelectItem>
-              ))
-            ) : null}
+                speciesList.map((species) => (
+                  <SelectItem key={species} value={species.toLowerCase()}>
+                    {species}
+                  </SelectItem>
+                ))
+              ) : null}
           </SelectGroup>
         </SelectContent>
       </Select>
@@ -126,12 +130,12 @@ export default function Filters({
           <SelectGroup>
             <SelectLabel>Tipos</SelectLabel>
             {typeList.length > 0 ? (
-              typeList.map((type) => (
-                <SelectItem key={type} value={type.toLowerCase()}>
-                  {type}
-                </SelectItem>
-              ))
-            ) : null}
+                typeList.map((type) => (
+                  <SelectItem key={type} value={type.toLowerCase()}>
+                    {type}
+                  </SelectItem>
+                ))
+              ) : null}
           </SelectGroup>
         </SelectContent>
       </Select>

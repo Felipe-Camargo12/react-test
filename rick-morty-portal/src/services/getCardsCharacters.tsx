@@ -5,45 +5,33 @@ export async function fetchCharacters(
   species: string,
   gender: string,
   type: string,
+  apiPage: number
 ) {
   try {
     const baseUrl = `${process.env.NEXT_PUBLIC_URL_API}/character`;
-    let currentPage = 1;
-    const allCharacters = [];
-    // Variavel para saber se ainda existem páginas a serem buscadas
-    let hasNext = true;
+    const url = new URL(baseUrl);
 
-    // Enquanto houver proxima página continua buscando
-    while (hasNext) {
-      const url = new URL(baseUrl);
-      // Atualiza a requisição p/ pagina atual
-      url.searchParams.append("page", currentPage.toString());
-      // Aplica os filtros apenas se tiverem valor definido
-      if (search) url.searchParams.append("name", search);
-      if (status) url.searchParams.append("status", status);
-      if (species) url.searchParams.append("species", species);
-      if (gender) url.searchParams.append("gender", gender);
-      if (type) url.searchParams.append("type", type);
+    // Define a página e aplica filtros (caso existam)
+    url.searchParams.append("page", apiPage.toString());
+    if (search) url.searchParams.append("name", search);
+    if (status) url.searchParams.append("status", status);
+    if (species) url.searchParams.append("species", species);
+    if (gender) url.searchParams.append("gender", gender);
+    if (type) url.searchParams.append("type", type);
 
-      const response = await fetch(url.toString());
-      const data = await response.json();
-      
-      //Adiciona resultados ao array
-      if (data.results) {
-        allCharacters.push(...data.results);
-      }
+    const response = await fetch(url.toString());
+    const data = await response.json();
 
-      // Verifica se existe uma proxima pagina
-      if (data.info?.next) {
-        currentPage++; // Iterra para ir pra proxima página
-      } else {
-        hasNext = false; // Encerra o while setando false
-      }
-    }
-
-    return allCharacters;
+    // Retorna tanto os personagens quanto o total de itens encontrados
+    return {
+      characters: data.results || [],
+      totalCount: data.info?.count || 0,
+    };
   } catch (error) {
     console.error("Erro ao buscar personagens:", error);
-    return [];
+    return {
+      characters: [],
+      totalCount: 0,
+    };
   }
 }
