@@ -53,59 +53,50 @@ export default function Home() {
     const timer = setTimeout(() => {
       handleSearchChange(debouncedSearch); // só envia pro filtro depois do tempo
     }, 500); // 500ms de delay
-  
+
     return () => clearTimeout(timer); // limpa timeout anterior se continuar digitando
   }, [debouncedSearch]);
 
   useEffect(() => {
     setDebouncedSearch(search);
-  }, [search]);  
+  }, [search]);
 
   // Effect para fazer busca de personagens sempre que um filtro ou página mudar
   // Passa a página atual e os filtros na busca
   // Requisição sempre que mudar filtro ou pageSize
   useEffect(() => {
     const pageParam = Number(searchParams.get("page")) || 1;
-    // Verifica se algum filtro está preenchido
-    const hasFilters = search || status || species || gender || type;
-
-    if (hasFilters && pageParam !== 1) {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("page", "1");
-      window.history.pushState(null, "", `/?${params.toString()}`);
-      setCurrentPage(1);
-      return; // Evita fazer a requisição com a página antiga
-    }
 
     setCurrentPage(pageParam);
     const apiPage = Math.ceil((pageParam * pageSize) / 20); // Cálculo da página da API
-  
+
     setLoading(true);
     fetchCharacters(search, status, species, gender, type, apiPage).then((data) => {
-      setAllCharacters(data.characters);
-      setTotalCount(data.totalCount);
-      setLoading(false);
-  
-      // Verifica se algum filtro está preenchido
-      const hasFilters = search || status || species || gender || type;
-  
-      // Verifica se foi um clear
-      const isClear = searchParams.get("clear") === "true";
-  
-      if (hasFilters || isClear) {
-        filtersRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-  
-        // Remove o "clear" da URL após usar
-        if (isClear) {
-          const params = new URLSearchParams(searchParams.toString());
-          params.delete("clear");
-          window.history.replaceState(null, "", `/?${params.toString()}`);
+        setAllCharacters(data.characters);
+        setTotalCount(data.totalCount);
+        setLoading(false);
+
+        // Verifica se algum filtro está preenchido
+        const hasFilters = search || status || species || gender || type;
+
+        // Verifica se foi um clear
+        const isClear = searchParams.get("clear") === "true";
+
+        if (hasFilters || isClear) {
+          filtersRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+
+          // Remove o "clear" da URL após usar
+          if (isClear) {
+            const params = new URLSearchParams(searchParams.toString());
+            params.delete("clear");
+            window.history.replaceState(null, "", `/?${params.toString()}`);
+          }
         }
       }
-    });
+    );
   }, [searchParams]);
 
   // Calculo o total de páginas baseado na quantidade de itens
@@ -118,7 +109,7 @@ export default function Home() {
   // Exemplo: Pagina 2 c/ 5 personagens: slice((2 - 1) * 5, 2 * 5) = slice(5, 10)
   const paginatedCharacters = allCharacters.slice(
     ((currentPage - 1) * pageSize) % 20, // inicio dentro da apiPage
-    ((currentPage - 1) * pageSize) % 20 + pageSize // fim dentro da apiPage
+    (((currentPage - 1) * pageSize) % 20) + pageSize // fim dentro da apiPage
   );
 
   // Atualiza a page atual
@@ -188,7 +179,10 @@ export default function Home() {
             </div>
           </div>
 
-          <div ref={filtersRef} className="w-full flex flex-col items-center gap-4">
+          <div
+            ref={filtersRef}
+            className="w-full flex flex-col items-center gap-4"
+          >
             {/* Filtros */}
             <Filters
               search={debouncedSearch}
